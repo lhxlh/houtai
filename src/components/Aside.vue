@@ -12,7 +12,7 @@
     <h3>通用后台管理系统</h3>
     <el-menu-item
       v-for="item in noChildren"
-      :index="item.path"
+      :index="item.name"
       :key="item.path"
       @click="clickMenu(item)"
     >
@@ -20,16 +20,20 @@
       <span slot="title">{{ item.label }}</span>
     </el-menu-item>
 
-    <el-submenu v-for="item in hasChildren" :index="item.path" :key="item.path">
+    <el-submenu v-for="item in hasChildren" :index="item.icon" :key="item.path">
       <template slot="title">
         <i :class="'el-icon-' + item.icon"></i>
         <span slot="title">{{ item.label }}</span>
       </template>
+
       <el-menu-item-group
-        v-for="(subItem, subIndex) in item.children"
+        v-for="subItem in item.children"
         :key="subItem.path"
+        :index="subItem.name"
       >
-        <el-menu-item :index="subIndex">{{ subItem.label }}</el-menu-item>
+        <el-menu-item @click="clickMenu(subItem)">
+          {{ subItem.label }}
+        </el-menu-item>
       </el-menu-item-group>
     </el-submenu>
   </el-menu>
@@ -40,7 +44,6 @@ export default {
   name: 'Aside',
   data() {
     return {
-      isCollapse: false,
       menu: [
         {
           path: '/',
@@ -97,7 +100,8 @@ export default {
       this.$router.push({
         name: item.name
       })
-    }
+      this.$store.commit('selectMenu', item)
+    },
   },
   computed: {
     noChildren() {
@@ -109,6 +113,9 @@ export default {
       return this.menu.filter(item => {
         return item.children
       })
+    },
+    isCollapse() {
+      return this.$store.state.tab.isCollapse
     }
   }
 }
@@ -127,7 +134,6 @@ export default {
     color: #fff;
     text-align: center;
     line-height: 60px;
-    margin: 0;
   }
 }
 </style>
